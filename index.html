@@ -1,370 +1,537 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#FFF8ED" />
 <title>测测你是什么品种的于涵清</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC",system-ui,sans-serif;}
-body{
-  background-color: #fff6e8;
-  color:#443333;
-  min-height:100vh;
-}
-.container{
-  max-width: 480px;
-  margin:0 auto;
-  padding:24px 16px;
-}
-.page{
-  display:none;
-}
-.page.active{
-  display:block;
-}
-/* 首页封面 */
-#page-home{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:32px;
-  text-align:center;
-}
-.home-title{
-  font-size:28px;
-  font-weight:bold;
-  color:#dd7898;
-  line-height:1.6;
-}
-.home-desc{
-  color:#886670;
-  font-size:16px;
-}
-.btn{
-  border:none;
-  padding:14px 36px;
-  border-radius:999px;
-  font-size:18px;
-  font-weight:bold;
-  cursor:pointer;
-  transition:0.2s ease;
-}
-.btn-start{
-  background:#ffb8c6;
-  color:#552836;
-  box-shadow: 0 4px 0 #f298aa;
-}
-.btn-start:active{
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #f298aa;
-}
-/* 答题页 */
-#page-quiz{
-  padding-top:30px;
-}
-.progress{
-  background:#ffe4ec;
-  height:12px;
-  border-radius:6px;
-  margin-bottom:20px;
-  overflow:hidden;
-}
-.progress-bar{
-  height:100%;
-  background:#ff9fb3;
-  width:0%;
-  transition:0.3s;
-}
-.question-box{
-  background:#fff;
-  border-radius:20px;
-  padding:24px;
-  box-shadow:0 6px 14px #ffddde;
-}
-.q-title{
-  font-size:18px;
-  margin-bottom:20px;
-  font-weight:600;
-}
-.option{
-  background:#fff4f7;
-  border-radius:14px;
-  padding:14px 16px;
-  margin-bottom:12px;
-  cursor:pointer;
-  transition:0.2s;
-  border:2px solid transparent;
-}
-.option:hover{
-  background:#ffe6ee;
-}
-.option.selected{
-  border-color:#ff88a2;
-  background:#ffe6ee;
-}
-/* 结果页 */
-#page-result{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  gap:24px;
-}
-.result-card{
-  background:#fff;
-  padding:32px 24px;
-  border-radius:24px;
-  box-shadow:0 8px 20px #ffd9e2;
-  width:100%;
-}
-.result-big{
-  font-size:42px;
-  font-weight:bold;
-  color:#ff708e;
-}
-.result-text{
-  font-size:20px;
-  margin:12px 0 20px;
-}
-.result-desc{
-  color:#77555c;
-  line-height:1.7;
-}
-.btn-restart{
-  background:#b8e8ff;
-  color:#27495c;
-  box-shadow:0 4px 0 #8dd7f7;
-  margin-top:16px;
-}
-.btn-restart:active{
-  transform: translateY(2px);
-  box-shadow:0 2px 0 #8dd7f7;
-}
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{ margin:0; padding:0; height:100%; }
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+                 "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    color:#3B2F2A;
+    background:
+      radial-gradient(circle at 12% 10%, #FFE3F1 0%, transparent 42%),
+      radial-gradient(circle at 90% 6%,  #FFF4C2 0%, transparent 40%),
+      radial-gradient(circle at 84% 94%, #DCF0FF 0%, transparent 44%),
+      radial-gradient(circle at 10% 90%, #E3FFE9 0%, transparent 42%),
+      #FFF8ED;
+    overflow:hidden;
+  }
+
+  /* ---------- 屏幕容器 ---------- */
+  .screen{
+    position: fixed; inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: calc(26px + env(safe-area-inset-top)) 20px calc(26px + env(safe-area-inset-bottom));
+  }
+  .screen.active{
+    display: flex;
+    animation: fadeUp .45s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes fadeUp{
+    from{ opacity:0; transform: translateY(18px); }
+    to{ opacity:1; transform: none; }
+  }
+
+  /* ---------- 封面 ---------- */
+  #screen-cover{ justify-content:center; align-items:center; text-align:center; }
+  .cover-inner{ width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:14px; }
+
+  .cover-emoji{
+    width:88px; height:88px; border-radius:50%;
+    display:grid; place-items:center;
+    font-size:44px;
+    background: linear-gradient(140deg,#FFF0B8,#FFD3E4 55%,#C8E7FF);
+    box-shadow: 0 12px 26px rgba(255,170,150,.35), inset 0 -5px 0 rgba(255,255,255,.6);
+    animation: floaty 3.4s ease-in-out infinite;
+  }
+  @keyframes floaty{ 0%,100%{ transform: translateY(0) rotate(-3deg);} 50%{ transform: translateY(-9px) rotate(3deg);} }
+
+  .cover-kicker{
+    margin:0; font-size:13px; font-weight:800; letter-spacing:3px; color:#B79A87;
+  }
+
+  .cover-title{ display:flex; flex-direction:column; gap:2px; margin:0; }
+  .t1{ font-size:16px; font-weight:800; letter-spacing:4px; color:#A89080; }
+  .t2{ font-size:clamp(24px,8vw,32px); font-weight:900; letter-spacing:2px; color:#4A3A32; }
+  .t3{
+    font-size:clamp(46px,17vw,68px);
+    font-weight:900; letter-spacing:6px; line-height:1.2;
+    background-image: linear-gradient(120deg,#FF6FA5,#FFA94D 38%,#FFD43B 62%,#5BC98B 88%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    filter: drop-shadow(0 8px 16px rgba(255,140,160,.32));
+  }
+
+  .cover-sub{ margin:6px 0 10px; font-size:14px; color:#9C8478; font-weight:600; }
+
+  .btn-start{
+    border:none; cursor:pointer; font-family:inherit;
+    padding: 17px 58px;
+    border-radius: 999px;
+    font-size: 20px; font-weight: 900; letter-spacing:2px; color:#fff;
+    background: linear-gradient(135deg,#FF8FB1,#FF6B9D 45%,#FF9F45);
+    box-shadow: 0 12px 26px rgba(255,107,157,.42), inset 0 -4px 0 rgba(0,0,0,.09);
+    animation: breathe 2.4s ease-in-out infinite;
+    transition: transform .15s;
+  }
+  .btn-start:active{ transform: scale(.95); }
+  @keyframes breathe{ 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.05);} }
+
+  .cover-tip{ margin:2px 0 0; font-size:12px; color:#BEABA0; letter-spacing:1px; }
+
+  /* ---------- 答题 ---------- */
+  #screen-quiz{ gap:14px; }
+  .quiz-top{ display:flex; flex-direction:column; gap:8px; }
+  .progress-row{ display:flex; justify-content:space-between; align-items:center;
+                 font-size:13px; font-weight:800; color:#A08B7E; letter-spacing:.5px; }
+  .progress-track{ height:10px; border-radius:99px; background:#FFEBD6; overflow:hidden; }
+  .progress-fill{
+    height:100%; width:0; border-radius:99px;
+    background: linear-gradient(90deg,#FFD43B,#FFA94D,#FF6FA5);
+    transition: width .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .question-text{
+    margin: 12px 0 4px;
+    font-size: clamp(19px, 5.6vw, 22px);
+    font-weight: 900; line-height: 1.5; color:#3B2F2A;
+  }
+
+  .options{ display:flex; flex-direction:column; gap:11px; padding-bottom:8px; }
+
+  .option{
+    display:flex; align-items:center; gap:12px;
+    width:100%; text-align:left;
+    padding: 15px 16px;
+    border-radius: 18px;
+    border: 2.5px solid #FFE6CB;
+    background:#fff;
+    font-family: inherit;
+    font-size: 15.5px; font-weight: 700; line-height: 1.4; color:#3B2F2A;
+    cursor:pointer;
+    box-shadow: 0 4px 0 #F5E3D0;
+    transition: transform .15s, box-shadow .2s, border-color .2s, background .2s;
+  }
+  .option:active{ transform: translateY(3px); box-shadow: 0 1px 0 #F5E3D0; }
+  .option.picked{
+    border-color:#FF6FA5;
+    background:#FFF3F8;
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #FFD0E2;
+  }
+  .badge{
+    flex:0 0 auto;
+    width:27px; height:27px; border-radius:50%;
+    display:grid; place-items:center;
+    font-size:13px; font-weight:900; color:#fff;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,.12);
+  }
+
+  /* ---------- 结果 ---------- */
+  #screen-result{ justify-content:center; }
+  .result-inner{
+    width:100%; max-width:420px; margin:auto;
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;
+  }
+  .result-emoji{
+    width:96px; height:96px; border-radius:50%;
+    display:grid; place-items:center; font-size:50px;
+    background:#fff;
+    box-shadow: 0 14px 30px rgba(190,150,120,.24), inset 0 -5px 0 #FFF0E0;
+    animation: popIn .6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes popIn{ from{ transform: scale(.4); opacity:0; } to{ transform: scale(1); opacity:1; } }
+
+  .result-prefix{ margin:6px 0 0; font-size:15px; font-weight:800; letter-spacing:3px; color:#A89080; }
+
+  .result-keyword{
+    margin:0; font-size: clamp(42px, 15vw, 62px);
+    font-weight:900; letter-spacing:4px; line-height:1.15;
+    background-image: linear-gradient(135deg,#FFC46B,#FF8A3D);
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+    filter: drop-shadow(0 8px 14px rgba(255,150,60,.28));
+    animation: popIn .65s cubic-bezier(.34,1.56,.64,1) both .05s;
+  }
+
+  .result-suffix{ margin:0; font-size:19px; font-weight:900; letter-spacing:2px; color:#4A3A32; }
+
+  .result-subtitle{
+    margin: 2px 0 6px;
+    display:inline-block;
+    padding: 7px 18px; border-radius:99px;
+    font-size:13px; font-weight:800; letter-spacing:1px;
+    color:#fff;
+    background: linear-gradient(135deg,#FFB36B,#FF8A3D);
+    box-shadow: 0 6px 14px rgba(255,150,60,.28);
+  }
+
+  .result-desc{
+    width:100%; margin:0;
+    background:#fff;
+    border: 2.5px solid #FFE8D2;
+    border-radius: 20px;
+    padding: 16px 18px;
+    font-size: 14.5px; line-height: 1.8; font-weight: 600; color:#6B5A50;
+    text-align:left;
+    box-shadow: 0 6px 0 #F7E7D6;
+  }
+
+  .tags{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:4px; }
+  .tag{
+    padding: 7px 14px; border-radius: 99px;
+    font-size: 12.5px; font-weight: 800; color:#9A7B62;
+    background:#fff; border: 2px dashed #FFD9B5;
+  }
+
+  .btn-restart{
+    margin-top:16px;
+    border:none; cursor:pointer; font-family:inherit;
+    padding: 15px 46px; border-radius:999px;
+    font-size:16px; font-weight:900; letter-spacing:2px; color:#fff;
+    background: linear-gradient(135deg,#8FD9B0,#5BC98B);
+    box-shadow: 0 10px 22px rgba(91,201,139,.36), inset 0 -4px 0 rgba(0,0,0,.08);
+    transition: transform .15s;
+  }
+  .btn-restart:active{ transform: scale(.95); }
+
+  @media (max-height: 640px){
+    .cover-emoji{ width:70px; height:70px; font-size:36px; }
+    .result-emoji{ width:80px; height:80px; font-size:42px; }
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <!-- 首页封面 -->
-  <div id="page-home" class="page active">
-    <h1 class="home-title">测测你是什么品种的于涵清</h1>
-    <p class="home-desc">一共10道小问题，凭第一直觉选择哦✨</p>
-    <button class="btn btn-start" onclick="startQuiz()">开始测试</button>
-  </div>
 
-  <!-- 答题页面 -->
-  <div id="page-quiz" class="page">
-    <div class="progress">
-      <div class="progress-bar" id="bar"></div>
-    </div>
-    <div class="question-box">
-      <div class="q-title" id="qText"></div>
-      <div id="optWrap"></div>
-    </div>
+<!-- ================= 封面 ================= -->
+<div class="screen active" id="screen-cover">
+  <div class="cover-inner">
+    <div class="cover-emoji">🧸</div>
+    <p class="cover-kicker">✨ 趣味人格小测试 ✨</p>
+    <h1 class="cover-title">
+      <span class="t1">测测你是</span>
+      <span class="t2">什么品种的</span>
+      <span class="t3">于涵清</span>
+    </h1>
+    <p class="cover-sub">10 道小题，测出你骨子里的那一款</p>
+    <button class="btn-start" id="startBtn">开 始 测 试</button>
+    <p class="cover-tip">大约需要 1 分钟</p>
   </div>
+</div>
 
-  <!-- 结果页 -->
-  <div id="page-result" class="page">
-    <div class="result-card">
-      <div id="resContent"></div>
-      <button class="btn btn-restart" onclick="restart()">重新测一次</button>
+<!-- ================= 答题 ================= -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-top">
+    <div class="progress-row">
+      <span id="progressLabel">第 1 / 10 题</span>
+      <span id="progressPct">0%</span>
     </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <h2 class="question-text" id="questionText"></h2>
+  <div class="options" id="optionsWrap"></div>
+</div>
+
+<!-- ================= 结果 ================= -->
+<div class="screen" id="screen-result">
+  <div class="result-inner">
+    <div class="result-emoji" id="resultEmoji">🛌</div>
+    <p class="result-prefix">你 是 一 个</p>
+    <h2 class="result-keyword" id="resultKeyword">好吃懒做</h2>
+    <p class="result-suffix">的于涵清</p>
+    <p class="result-subtitle" id="resultSubtitle">躺平界天花板</p>
+    <p class="result-desc" id="resultDesc"></p>
+    <div class="tags" id="resultTags"></div>
+    <button class="btn-restart" id="restartBtn">再 测 一 次</button>
   </div>
 </div>
 
 <script>
-// 10道题目，每个选项对应一个分数标签 a/b/c/d/e，对应5种结果
-const questions = [
+/* ==================== 题库 ==================== */
+const QUESTIONS = [
   {
-    q:"周末早上醒来，你第一反应是？",
-    opt:[
-      {txt:"继续躺着，能不起床就不起",tag:"a"},
-      {txt:"立刻爬起来，安排今天好玩的事",tag:"b"},
-      {txt:"先刷会儿手机，随缘安排",tag:"c"},
-      {txt:"起来收拾房间，把环境弄舒服",tag:"d"},
-      {txt:"去找朋友聊天或者出门溜达",tag:"e"}
+    q: '周末的闹钟响了，你的第一反应是——',
+    options: [
+      { t: '关掉，再睡五百年', k: 'lazy' },
+      { t: '一骨碌爬起来，今天必须搞点事', k: 'hot' },
+      { t: '先给在意的人发一句早安', k: 'gentle' },
+      { t: '躺着刷手机，随缘起床', k: 'zen' },
+      { t: '突然想试试昨天刷到的奇怪玩法', k: 'wacky' }
     ]
   },
   {
-    q:"吃到很好吃的东西，你会？",
-    opt:[
-      {txt:"狂炫，吃完再说别的",tag:"a"},
-      {txt:"拍照记录，发出去分享快乐",tag:"b"},
-      {txt:"慢慢品尝，心里默默打分",tag:"c"},
-      {txt:"记住做法，以后试着自己做",tag:"d"},
-      {txt:"马上安利给身边好朋友",tag:"e"}
+    q: '朋友神秘兮兮地说「我有件大事告诉你」，你——',
+    options: [
+      { t: '躺着听，别让我坐起来', k: 'lazy' },
+      { t: '眼睛发光：快说快说，是不是有大瓜', k: 'wacky' },
+      { t: '认真看着对方：你还好吗？', k: 'gentle' },
+      { t: '直接问：需要我做什么，我现在就来', k: 'hot' },
+      { t: '哦，慢慢说，不急', k: 'zen' }
     ]
   },
   {
-    q:"突然有空余时间，你更想？",
-    opt:[
-      {txt:"瘫着发呆刷短视频",tag:"a"},
-      {txt:"去尝试新鲜没玩过的事情",tag:"b"},
-      {txt:"随便做点轻松小事，怎么舒服怎么来",tag:"c"},
-      {txt:"完成积攒的小任务",tag:"d"},
-      {txt:"约人一起玩",tag:"e"}
+    q: '大家一起点菜，你通常是那个——',
+    options: [
+      { t: '「你们点，我都吃，别问我」的人', k: 'lazy' },
+      { t: '什么都想试，专挑奇怪的点', k: 'wacky' },
+      { t: '记得谁不吃辣、谁在忌口的人', k: 'gentle' },
+      { t: '抢过菜单：这顿我来安排！', k: 'hot' },
+      { t: '「随便都行，你们决定」的人', k: 'zen' }
     ]
   },
   {
-    q:"遇到很难解决的烦心事，你会？",
-    opt:[
-      {txt:"摆烂，先放着不想处理",tag:"a"},
-      {txt:"想各种奇奇怪怪的办法搞定它",tag:"b"},
-      {txt:"自己慢慢消化情绪",tag:"c"},
-      {txt:"一步一步有条理解决",tag:"d"},
-      {txt:"找人倾诉，寻求陪伴",tag:"e"}
+    q: '排队排了很久还没到你，你会——',
+    options: [
+      { t: '找个角落坐下，能歇就歇', k: 'lazy' },
+      { t: '不知不觉跟旁边的人聊起来了', k: 'wacky' },
+      { t: '把位置让给后面抱小孩的人', k: 'gentle' },
+      { t: '去找工作人员问还要等多久', k: 'hot' },
+      { t: '戴上耳机，排着呗', k: 'zen' }
     ]
   },
   {
-    q:"朋友约你出门，但你有点懒，你？",
-    opt:[
-      {txt:"直接婉拒，在家舒服",tag:"a"},
-      {txt:"立马答应，出门才有乐子",tag:"b"},
-      {txt:"看心情，犹豫半天再决定",tag:"c"},
-      {txt:"收拾妥当准时赴约",tag:"d"},
-      {txt:"纠结一下还是选择赴约",tag:"e"}
+    q: '被人误会、收到一条差评，你会——',
+    options: [
+      { t: '懒得解释，爱怎么想怎么想', k: 'lazy' },
+      { t: '用段子回怼，顺便圈一波粉', k: 'wacky' },
+      { t: '私下问问对方到底发生了什么', k: 'gentle' },
+      { t: '摆事实讲道理，据理力争', k: 'hot' },
+      { t: '深呼吸，过两天就忘了', k: 'zen' }
     ]
   },
   {
-    q:"看到可爱小东西，你的第一想法？",
-    opt:[
-      {txt:"看看就行，懒得折腾",tag:"a"},
-      {txt:"哇好有意思！脑洞大开",tag:"b"},
-      {txt:"觉得好看，默默存图",tag:"c"},
-      {txt:"评估实不实用再考虑",tag:"d"},
-      {txt:"发给同好一起欣赏",tag:"e"}
+    q: '突然多出三天假，你的第一念头是——',
+    options: [
+      { t: '太好了，可以躺三天', k: 'lazy' },
+      { t: '说走就走，随便去哪都行', k: 'wacky' },
+      { t: '回家陪陪家人', k: 'gentle' },
+      { t: '约人打球、爬山、冲一趟', k: 'hot' },
+      { t: '泡杯茶，晒晒太阳看看书', k: 'zen' }
     ]
   },
   {
-    q:"计划被打乱了，你会？",
-    opt:[
-      {txt:"干脆不计划了，躺平",tag:"a"},
-      {txt:"顺势开启新玩法！随机惊喜",tag:"b"},
-      {txt:"有点烦躁，但慢慢接受",tag:"c"},
-      {txt:"快速重新安排新计划",tag:"d"},
-      {txt:"和别人吐槽一下这件事",tag:"e"}
+    q: '小组作业里，你的角色是——',
+    options: [
+      { t: '分工时默默挑了最轻松的', k: 'lazy' },
+      { t: '提各种天马行空的想法', k: 'wacky' },
+      { t: '协调时间，帮掉队的人补上', k: 'gentle' },
+      { t: '熬夜把最难的部分做完', k: 'hot' },
+      { t: '按老师要求来，不卷', k: 'zen' }
     ]
   },
   {
-    q:"空闲的时候更喜欢哪种状态？",
-    opt:[
-      {txt:"安安静静独自躺平",tag:"a"},
-      {txt:"不断找新鲜刺激",tag:"b"},
-      {txt:"无拘无束随性度日",tag:"c"},
-      {txt:"充实有序，稳步做事",tag:"d"},
-      {txt:"和伙伴热热闹闹",tag:"e"}
+    q: '路上遇到一只淋湿的小猫，你会——',
+    options: [
+      { t: '先拍照发圈，等别人来一起救', k: 'lazy' },
+      { t: '立刻给它起名字、做窝、开直播', k: 'wacky' },
+      { t: '带去医院检查，想办法安置', k: 'gentle' },
+      { t: '挨家挨户问是谁家丢的', k: 'hot' },
+      { t: '在楼下放点吃的，它愿意来就来', k: 'zen' }
     ]
   },
   {
-    q:"别人拜托你帮忙，你通常？",
-    opt:[
-      {txt:"嫌麻烦，尽量推脱",tag:"a"},
-      {txt:"乐意帮忙，顺便玩出新花样",tag:"b"},
-      {txt:"看自己有没有精力",tag:"c"},
-      {txt:"认真靠谱地完成",tag:"d"},
-      {txt:"不忍心拒绝，愿意帮忙",tag:"e"}
+    q: '你最希望别人怎么形容你——',
+    options: [
+      { t: '「你活得好轻松啊」', k: 'lazy' },
+      { t: '「跟你在一起永远不会无聊」', k: 'wacky' },
+      { t: '「你真的很会照顾人」', k: 'gentle' },
+      { t: '「你说干就干，太猛了」', k: 'hot' },
+      { t: '「你心态真好」', k: 'zen' }
     ]
   },
   {
-    q:"想象属于你的小世界是什么样？",
-    opt:[
-      {txt:"软乎乎被窝，无限零食",tag:"a"},
-      {txt:"到处都是新奇好玩的机关",tag:"b"},
-      {txt:"松弛自在，没有压力",tag:"c"},
-      {txt:"整洁舒服，一切井井有条",tag:"d"},
-      {txt:"很多好朋友天天相伴",tag:"e"}
+    q: '如果人生是一部电影，你的片名是——',
+    options: [
+      { t: '《躺平万岁》', k: 'lazy' },
+      { t: '《脑子里有座游乐园》', k: 'wacky' },
+      { t: '《人间温柔观察日记》', k: 'gentle' },
+      { t: '《冲！冲！冲！》', k: 'hot' },
+      { t: '《一切随缘》', k: 'zen' }
     ]
   }
 ];
 
-// 5种结果配置
-const resultMap = {
-  a:{
-    big:"好吃懒做",
-    desc:"你是佛系躺平小能手！人生信条舒服优先，万事不急，美食和被窝就是你的终极归宿，不是懒惰，只是很擅长享受松弛感🥟"
+/* ==================== 结果配置 ==================== */
+const RESULTS = {
+  lazy: {
+    keyword: '好吃懒做',
+    emoji: '🛌',
+    grad: ['#FFC46B', '#FF8A3D'],
+    subtitle: '躺平界天花板',
+    desc: '你的信条是：能坐着绝不站着，能躺着绝不坐着。别人在卷，你在被窝里卷被子。但懒不是罪——你只是把能量全用在了「享受生活」这一件事上，而且用得很专业。',
+    tags: ['被窝原住民', '沙发土豆', '快乐至上']
   },
-  b:{
-    big:"古灵精怪",
-    desc:"你的小脑瓜装满奇思妙想！永远对世界充满好奇，喜欢新鲜、爱整活，有你在永远不会无聊，脑洞值拉满✨"
+  wacky: {
+    keyword: '古灵精怪',
+    emoji: '🎪',
+    grad: ['#FFD43B', '#FF9F1C'],
+    subtitle: '行走的快乐发动机',
+    desc: '你脑子里住着一整个马戏团，随时都能掏出一个让人笑出声的主意。跟你待在一起，平淡的日子也会突然拐个弯，变成一场小小的冒险。',
+    tags: ['脑洞批发商', '气氛组组长', '八卦雷达']
   },
-  c:{
-    big:"随性佛系",
-    desc:"你是随遇而安的温柔选手！不内卷不内耗，跟着自己节奏走，情绪稳定，接纳所有状态，自在又柔和☁️"
+  gentle: {
+    keyword: '温柔体贴',
+    emoji: '🌸',
+    grad: ['#FF9DC0', '#FF6FA5'],
+    subtitle: '人间小暖炉',
+    desc: '你总能第一个发现谁情绪不对，也记得谁不吃香菜。你把温柔当成一种本能，把照顾人当成一种习惯。被你爱过的人，都会记得那种被稳稳接住的感觉。',
+    tags: ['情绪捕手', '细节控', '人间小太阳']
   },
-  d:{
-    big:"踏实稳妥",
-    desc:"靠谱担当就是你！做事有条理、细心耐心，稳定又可靠，身边人都很信任你，是让人安心的存在🌷"
+  hot: {
+    keyword: '热血莽撞',
+    emoji: '🔥',
+    grad: ['#FF8A5B', '#FF4E50'],
+    subtitle: '行动力满格的冲锋队长',
+    desc: '别人还在纠结「要不要」，你已经冲出去了。你相信想做的事就要马上去做，喜欢的人就要大声说出来。世界在你眼里是一份待拆的礼物，而你从来不等。',
+    tags: ['行动派', '莽就完了', '永远年轻']
   },
-  e:{
-    big:"热情粘人",
-    desc:"你自带温暖磁场！喜欢陪伴、热爱社交，共情力满满，很在乎朋友，是大家身边温暖的小太阳🌞"
+  zen: {
+    keyword: '佛系通透',
+    emoji: '🍃',
+    grad: ['#7FE0B0', '#3FBF8F'],
+    subtitle: '当代心学大师',
+    desc: '你不是冷漠，只是把精力留给了真正值得的事。别人在抢，你在看云。你懂得随缘，也懂得什么时候该认真——这份松弛感，是很多人一辈子的功课。',
+    tags: ['随缘选手', '情绪稳定', '云淡风轻']
   }
 };
 
+const KEYS = ['lazy', 'wacky', 'gentle', 'hot', 'zen'];
+const BADGE_COLORS = ['#FF6FA5', '#FFA94D', '#FFC93C', '#5BC98B', '#5B9BFF'];
+const LETTERS = 'ABCDE';
+
+/* ==================== 状态 ==================== */
 let current = 0;
-let score = {a:0,b:0,c:0,d:0,e:0};
+let locked = false;
+let scores = { lazy: 0, wacky: 0, gentle: 0, hot: 0, zen: 0 };
 
-// 页面切换
-function showPage(id){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+/* ==================== DOM ==================== */
+const $ = id => document.getElementById(id);
+const screens = document.querySelectorAll('.screen');
+
+/* ==================== 屏幕切换 ==================== */
+function showScreen(id) {
+  screens.forEach(s => s.classList.remove('active'));
+  const el = $(id);
+  el.classList.add('active');
+  el.scrollTop = 0;
 }
 
-function startQuiz(){
-  current=0;
-  score={a:0,b:0,c:0,d:0,e:0};
-  renderQ();
-  showPage("page-quiz");
-}
-
-function renderQ(){
-  const q = questions[current];
-  document.getElementById("qText").innerText = `${current+1}. ${q.q}`;
-  const wrap = document.getElementById("optWrap");
-  wrap.innerHTML = "";
-  q.opt.forEach(o=>{
-    const div = document.createElement("div");
-    div.className="option";
-    div.innerText = o.txt;
-    div.onclick = ()=>{
-      score[o.tag]++;
-      current++;
-      if(current >= questions.length){
-        showResult();
-      }else{
-        renderQ();
-      }
-    }
-    wrap.appendChild(div);
-  })
-  document.getElementById("bar").style.width = `${(current / questions.length)*100}%`;
-}
-
-function showResult(){
-  // 找最高分
-  let maxTag = "a";
-  let maxVal = 0;
-  for(let k in score){
-    if(score[k]>maxVal){
-      maxVal = score[k];
-      maxTag = k;
-    }
+/* ==================== 工具 ==================== */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  const res = resultMap[maxTag];
-  const html = `
-    <div class="result-text">你是一个<span class="result-big">${res.big}</span>的于涵清</div>
-    <p class="result-desc">${res.desc}</p>
-  `;
-  document.getElementById("resContent").innerHTML = html;
-  showPage("page-result");
+  return a;
 }
 
-function restart(){
-  showPage("page-home");
+/* ==================== 开始测试 ==================== */
+function startQuiz() {
+  current = 0;
+  locked = false;
+  scores = { lazy: 0, wacky: 0, gentle: 0, hot: 0, zen: 0 };
+  showScreen('screen-quiz');
+  renderQuestion();
 }
+
+/* ==================== 渲染题目 ==================== */
+function renderQuestion() {
+  const q = QUESTIONS[current];
+
+  $('progressLabel').textContent = `第 ${current + 1} / ${QUESTIONS.length} 题`;
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  $('progressPct').textContent = pct + '%';
+  $('progressFill').style.width = pct + '%';
+
+  $('questionText').textContent = q.q;
+
+  const wrap = $('optionsWrap');
+  wrap.innerHTML = '';
+
+  shuffle(q.options).forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML =
+      `<span class="badge" style="background:${BADGE_COLORS[i]}">${LETTERS[i]}</span>` +
+      `<span class="opt-text"></span>`;
+    btn.querySelector('.opt-text').textContent = opt.t;
+    btn.addEventListener('click', () => pickOption(btn, opt.k));
+    wrap.appendChild(btn);
+  });
+
+  $('screen-quiz').scrollTop = 0;
+}
+
+/* ==================== 选择答案 ==================== */
+function pickOption(btn, key) {
+  if (locked) return;
+  locked = true;
+
+  btn.classList.add('picked');
+  scores[key]++;
+
+  setTimeout(() => {
+    current++;
+    locked = false;
+    if (current >= QUESTIONS.length) {
+      showResult();
+    } else {
+      renderQuestion();
+    }
+  }, 280);
+}
+
+/* ==================== 计算结果 ==================== */
+function showResult() {
+  let best = KEYS[0];
+  KEYS.forEach(k => {
+    if (scores[k] > scores[best]) best = k;
+  });
+
+  const r = RESULTS[best];
+
+  $('resultEmoji').textContent = r.emoji;
+
+  const kw = $('resultKeyword');
+  kw.textContent = r.keyword;
+  kw.style.backgroundImage = `linear-gradient(135deg, ${r.grad[0]}, ${r.grad[1]})`;
+  kw.style.filter = `drop-shadow(0 8px 14px ${hexToRgba(r.grad[1], 0.3)})`;
+
+  const sub = $('resultSubtitle');
+  sub.textContent = r.subtitle;
+  sub.style.background = `linear-gradient(135deg, ${r.grad[0]}, ${r.grad[1]})`;
+  sub.style.boxShadow = `0 6px 14px ${hexToRgba(r.grad[1], 0.3)}`;
+
+  $('resultDesc').textContent = r.desc;
+
+  $('resultTags').innerHTML = r.tags
+    .map(t => `<span class="tag"># ${t}</span>`)
+    .join('');
+
+  showScreen('screen-result');
+}
+
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/* ==================== 事件绑定 ==================== */
+$('startBtn').addEventListener('click', startQuiz);
+$('restartBtn').addEventListener('click', () => {
+  showScreen('screen-cover');
+});
 </script>
 </body>
 </html>
