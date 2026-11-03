@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测测你是什么品种的于涵清</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC",system-ui,sans-serif;}
+body{
+  background-color: #fff6e8;
+  color:#443333;
+  min-height:100vh;
+}
+.container{
+  max-width: 480px;
+  margin:0 auto;
+  padding:24px 16px;
+}
+.page{
+  display:none;
+}
+.page.active{
+  display:block;
+}
+/* 首页封面 */
+#page-home{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:32px;
+  text-align:center;
+}
+.home-title{
+  font-size:28px;
+  font-weight:bold;
+  color:#dd7898;
+  line-height:1.6;
+}
+.home-desc{
+  color:#886670;
+  font-size:16px;
+}
+.btn{
+  border:none;
+  padding:14px 36px;
+  border-radius:999px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.2s ease;
+}
+.btn-start{
+  background:#ffb8c6;
+  color:#552836;
+  box-shadow: 0 4px 0 #f298aa;
+}
+.btn-start:active{
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #f298aa;
+}
+/* 答题页 */
+#page-quiz{
+  padding-top:30px;
+}
+.progress{
+  background:#ffe4ec;
+  height:12px;
+  border-radius:6px;
+  margin-bottom:20px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  background:#ff9fb3;
+  width:0%;
+  transition:0.3s;
+}
+.question-box{
+  background:#fff;
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 6px 14px #ffddde;
+}
+.q-title{
+  font-size:18px;
+  margin-bottom:20px;
+  font-weight:600;
+}
+.option{
+  background:#fff4f7;
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:0.2s;
+  border:2px solid transparent;
+}
+.option:hover{
+  background:#ffe6ee;
+}
+.option.selected{
+  border-color:#ff88a2;
+  background:#ffe6ee;
+}
+/* 结果页 */
+#page-result{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:24px;
+}
+.result-card{
+  background:#fff;
+  padding:32px 24px;
+  border-radius:24px;
+  box-shadow:0 8px 20px #ffd9e2;
+  width:100%;
+}
+.result-big{
+  font-size:42px;
+  font-weight:bold;
+  color:#ff708e;
+}
+.result-text{
+  font-size:20px;
+  margin:12px 0 20px;
+}
+.result-desc{
+  color:#77555c;
+  line-height:1.7;
+}
+.btn-restart{
+  background:#b8e8ff;
+  color:#27495c;
+  box-shadow:0 4px 0 #8dd7f7;
+  margin-top:16px;
+}
+.btn-restart:active{
+  transform: translateY(2px);
+  box-shadow:0 2px 0 #8dd7f7;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- 首页封面 -->
+  <div id="page-home" class="page active">
+    <h1 class="home-title">测测你是什么品种的于涵清</h1>
+    <p class="home-desc">一共10道小问题，凭第一直觉选择哦✨</p>
+    <button class="btn btn-start" onclick="startQuiz()">开始测试</button>
+  </div>
+
+  <!-- 答题页面 -->
+  <div id="page-quiz" class="page">
+    <div class="progress">
+      <div class="progress-bar" id="bar"></div>
+    </div>
+    <div class="question-box">
+      <div class="q-title" id="qText"></div>
+      <div id="optWrap"></div>
+    </div>
+  </div>
+
+  <!-- 结果页 -->
+  <div id="page-result" class="page">
+    <div class="result-card">
+      <div id="resContent"></div>
+      <button class="btn btn-restart" onclick="restart()">重新测一次</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 10道题目，每个选项对应一个分数标签 a/b/c/d/e，对应5种结果
+const questions = [
+  {
+    q:"周末早上醒来，你第一反应是？",
+    opt:[
+      {txt:"继续躺着，能不起床就不起",tag:"a"},
+      {txt:"立刻爬起来，安排今天好玩的事",tag:"b"},
+      {txt:"先刷会儿手机，随缘安排",tag:"c"},
+      {txt:"起来收拾房间，把环境弄舒服",tag:"d"},
+      {txt:"去找朋友聊天或者出门溜达",tag:"e"}
+    ]
+  },
+  {
+    q:"吃到很好吃的东西，你会？",
+    opt:[
+      {txt:"狂炫，吃完再说别的",tag:"a"},
+      {txt:"拍照记录，发出去分享快乐",tag:"b"},
+      {txt:"慢慢品尝，心里默默打分",tag:"c"},
+      {txt:"记住做法，以后试着自己做",tag:"d"},
+      {txt:"马上安利给身边好朋友",tag:"e"}
+    ]
+  },
+  {
+    q:"突然有空余时间，你更想？",
+    opt:[
+      {txt:"瘫着发呆刷短视频",tag:"a"},
+      {txt:"去尝试新鲜没玩过的事情",tag:"b"},
+      {txt:"随便做点轻松小事，怎么舒服怎么来",tag:"c"},
+      {txt:"完成积攒的小任务",tag:"d"},
+      {txt:"约人一起玩",tag:"e"}
+    ]
+  },
+  {
+    q:"遇到很难解决的烦心事，你会？",
+    opt:[
+      {txt:"摆烂，先放着不想处理",tag:"a"},
+      {txt:"想各种奇奇怪怪的办法搞定它",tag:"b"},
+      {txt:"自己慢慢消化情绪",tag:"c"},
+      {txt:"一步一步有条理解决",tag:"d"},
+      {txt:"找人倾诉，寻求陪伴",tag:"e"}
+    ]
+  },
+  {
+    q:"朋友约你出门，但你有点懒，你？",
+    opt:[
+      {txt:"直接婉拒，在家舒服",tag:"a"},
+      {txt:"立马答应，出门才有乐子",tag:"b"},
+      {txt:"看心情，犹豫半天再决定",tag:"c"},
+      {txt:"收拾妥当准时赴约",tag:"d"},
+      {txt:"纠结一下还是选择赴约",tag:"e"}
+    ]
+  },
+  {
+    q:"看到可爱小东西，你的第一想法？",
+    opt:[
+      {txt:"看看就行，懒得折腾",tag:"a"},
+      {txt:"哇好有意思！脑洞大开",tag:"b"},
+      {txt:"觉得好看，默默存图",tag:"c"},
+      {txt:"评估实不实用再考虑",tag:"d"},
+      {txt:"发给同好一起欣赏",tag:"e"}
+    ]
+  },
+  {
+    q:"计划被打乱了，你会？",
+    opt:[
+      {txt:"干脆不计划了，躺平",tag:"a"},
+      {txt:"顺势开启新玩法！随机惊喜",tag:"b"},
+      {txt:"有点烦躁，但慢慢接受",tag:"c"},
+      {txt:"快速重新安排新计划",tag:"d"},
+      {txt:"和别人吐槽一下这件事",tag:"e"}
+    ]
+  },
+  {
+    q:"空闲的时候更喜欢哪种状态？",
+    opt:[
+      {txt:"安安静静独自躺平",tag:"a"},
+      {txt:"不断找新鲜刺激",tag:"b"},
+      {txt:"无拘无束随性度日",tag:"c"},
+      {txt:"充实有序，稳步做事",tag:"d"},
+      {txt:"和伙伴热热闹闹",tag:"e"}
+    ]
+  },
+  {
+    q:"别人拜托你帮忙，你通常？",
+    opt:[
+      {txt:"嫌麻烦，尽量推脱",tag:"a"},
+      {txt:"乐意帮忙，顺便玩出新花样",tag:"b"},
+      {txt:"看自己有没有精力",tag:"c"},
+      {txt:"认真靠谱地完成",tag:"d"},
+      {txt:"不忍心拒绝，愿意帮忙",tag:"e"}
+    ]
+  },
+  {
+    q:"想象属于你的小世界是什么样？",
+    opt:[
+      {txt:"软乎乎被窝，无限零食",tag:"a"},
+      {txt:"到处都是新奇好玩的机关",tag:"b"},
+      {txt:"松弛自在，没有压力",tag:"c"},
+      {txt:"整洁舒服，一切井井有条",tag:"d"},
+      {txt:"很多好朋友天天相伴",tag:"e"}
+    ]
+  }
+];
+
+// 5种结果配置
+const resultMap = {
+  a:{
+    big:"好吃懒做",
+    desc:"你是佛系躺平小能手！人生信条舒服优先，万事不急，美食和被窝就是你的终极归宿，不是懒惰，只是很擅长享受松弛感🥟"
+  },
+  b:{
+    big:"古灵精怪",
+    desc:"你的小脑瓜装满奇思妙想！永远对世界充满好奇，喜欢新鲜、爱整活，有你在永远不会无聊，脑洞值拉满✨"
+  },
+  c:{
+    big:"随性佛系",
+    desc:"你是随遇而安的温柔选手！不内卷不内耗，跟着自己节奏走，情绪稳定，接纳所有状态，自在又柔和☁️"
+  },
+  d:{
+    big:"踏实稳妥",
+    desc:"靠谱担当就是你！做事有条理、细心耐心，稳定又可靠，身边人都很信任你，是让人安心的存在🌷"
+  },
+  e:{
+    big:"热情粘人",
+    desc:"你自带温暖磁场！喜欢陪伴、热爱社交，共情力满满，很在乎朋友，是大家身边温暖的小太阳🌞"
+  }
+};
+
+let current = 0;
+let score = {a:0,b:0,c:0,d:0,e:0};
+
+// 页面切换
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function startQuiz(){
+  current=0;
+  score={a:0,b:0,c:0,d:0,e:0};
+  renderQ();
+  showPage("page-quiz");
+}
+
+function renderQ(){
+  const q = questions[current];
+  document.getElementById("qText").innerText = `${current+1}. ${q.q}`;
+  const wrap = document.getElementById("optWrap");
+  wrap.innerHTML = "";
+  q.opt.forEach(o=>{
+    const div = document.createElement("div");
+    div.className="option";
+    div.innerText = o.txt;
+    div.onclick = ()=>{
+      score[o.tag]++;
+      current++;
+      if(current >= questions.length){
+        showResult();
+      }else{
+        renderQ();
+      }
+    }
+    wrap.appendChild(div);
+  })
+  document.getElementById("bar").style.width = `${(current / questions.length)*100}%`;
+}
+
+function showResult(){
+  // 找最高分
+  let maxTag = "a";
+  let maxVal = 0;
+  for(let k in score){
+    if(score[k]>maxVal){
+      maxVal = score[k];
+      maxTag = k;
+    }
+  }
+  const res = resultMap[maxTag];
+  const html = `
+    <div class="result-text">你是一个<span class="result-big">${res.big}</span>的于涵清</div>
+    <p class="result-desc">${res.desc}</p>
+  `;
+  document.getElementById("resContent").innerHTML = html;
+  showPage("page-result");
+}
+
+function restart(){
+  showPage("page-home");
+}
+</script>
+</body>
+</html>
